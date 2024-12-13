@@ -7,12 +7,13 @@ import numpy as np
 import os
 import pandas as pd
 from .preprocessing import preprocess_data
-
+import pickle
 # Đường dẫn đến thư mục chứa model
-MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models', 'model.sav')
+MODEL_PATH = "./models/model.sav"
 
 # Tải model khi khởi động server
 try:
+    print("ĐANG LOAD MODEL", MODEL_PATH)
     model = joblib.load(MODEL_PATH)
 except Exception as e:
     print(f"Không thể load model: {str(e)}")
@@ -22,7 +23,7 @@ class PredictViewSet(viewsets.ViewSet):
     def create(self, request):
         """Xử lý POST request để thực hiện dự đoán"""
         try:
-            data = request.data.get('input_data')
+            data = request.data
             
             if not data:
                 return Response(
@@ -41,13 +42,6 @@ class PredictViewSet(viewsets.ViewSet):
                 df_processed = preprocess_data(data)
                 input_data = df_processed.values
 
-                # In ra thông tin input_data
-                print("\nShape của input_data:", input_data.shape)
-                print("\nGiá trị của input_data:")
-                print(input_data)
-                print("\nCác cột của DataFrame:")
-                print(df_processed.columns.tolist())
-
             except Exception as e:
                 return Response(
                     {'error': f'Lỗi khi xử lý dữ liệu: {str(e)}'},
@@ -56,6 +50,9 @@ class PredictViewSet(viewsets.ViewSet):
             
             # Thực hiện dự đoán
             prediction = model.predict(input_data)
+            
+
+        
 
             return Response({
                 'prediction': prediction[0].tolist(),

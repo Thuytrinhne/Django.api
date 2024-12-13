@@ -1,1 +1,3 @@
 # Django.api
+
+{"Gender":"Male","Height":171.148359,"Weight":86.185197,"Cholesterol":259.465814,"BMI":29.423017,"Blood_Glucose":157.652848,"Bone_Density":0.132868,"Vision":0.2,"Hearing":58.786198,"Physical_Activity":"Moderate","Smoking":"Former","Alcohol":"Occasional","Diet":"Low-carb","Chronic_Diseases":"Hypertension","Medication":"Regular","Family_History":"Diabetes","Cognitive_Function":44.059172,"Mental_Health":"Good","Sleep":"Insomnia","Stress":2.797064,"Pollution":5.142344,"Sun_Exposure":7.108975,"Education":"Undergraduate","Income":"Medium","Age":89,"Systolic_BP":151.0,"Diastolic_BP":109.0}

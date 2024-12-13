@@ -1,3 +1,4 @@
+import pickle
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
@@ -12,7 +13,7 @@ def convert_to_dataframe(data):
         'Physical_Activity', 'Smoking', 'Alcohol', 'Diet',
         'Chronic_Diseases', 'Medication', 'Family_History',
         'Cognitive_Function', 'Mental_Health', 'Sleep', 'Stress',
-        'Pollution', 'Sun_Exposure', 'Education', 'Income', 'Age',
+        'Pollution', 'Sun_Exposure', 'Education', 'Income',
         'Systolic_BP', 'Diastolic_BP'
     ]
     return pd.DataFrame([data])[columns]
@@ -21,15 +22,19 @@ def normalize_numeric_features(df: pd.DataFrame, numeric_columns: list) -> pd.Da
     """
     Chuẩn hóa các biến số bằng StandardScaler
     """
-    scaler = StandardScaler()
-    df[numeric_columns] = scaler.fit_transform(df[numeric_columns])
+    scaler_path = './predict/scaler.pkl'  # Adjust the path according to your project structure
+    with open(scaler_path, 'rb') as f:
+        scaler = pickle.load(f)
+    df[numeric_columns] = scaler.transform(df[numeric_columns])
     return df
 
 def encode_categorical_features(df, categorical_columns):
     """
     Mã hóa one-hot cho các biến phân loại trong DataFrame.
     """
-    encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
+    encoder_path = './predict/encoder.pkl'  # Adjust the path according to your project structure
+    with open(encoder_path, 'rb') as f:
+        encoder = pickle.load(f)
     encoded_features = encoder.fit_transform(df[categorical_columns])
     feature_names = encoder.get_feature_names_out(categorical_columns)
     
@@ -56,4 +61,13 @@ def preprocess_data(data):
 
     if categorical_columns:
         df = encode_categorical_features(df, categorical_columns)
+
+    full_columns_model_path = './predict/columns.pkl'
+    with open(full_columns_model_path, 'rb') as f:
+        full_columns = pickle.load(f)
+    full_columns = [col for col in full_columns if col != 'Age']
+    for col in full_columns:
+        if col not in df.columns:
+            df[col] = 0 
+    df = df[full_columns]
     return df
