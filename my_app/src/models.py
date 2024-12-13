@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
+import uuid  # Thêm import uuid
 
 class User(models.Model):
-    id = models.UUIDField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)  # Thêm default và editable=False
     name = models.CharField(max_length=255)
     email = models.EmailField(max_length=255, unique=True)  # Email nên là duy nhất
     password = models.TextField()
@@ -15,10 +16,12 @@ class User(models.Model):
 
     # Hash mật khẩu trước khi lưu
     def save(self, *args, **kwargs):
-        if not self.pk:  # Chỉ hash mật khẩu khi tạo mới
-            self.password = make_password(self.password)
         super(User, self).save(*args, **kwargs)
 
     # Xác minh mật khẩu
     def verify_password(self, raw_password):
-        return check_password(raw_password, self.password)
+        print("Login - Raw password:", raw_password)
+        print("Login - Stored hash:", self.password)
+        result = check_password(raw_password, self.password)
+        print("Login - Password match:", result)
+        return result

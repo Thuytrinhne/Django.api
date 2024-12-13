@@ -12,11 +12,23 @@ class RegisterView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     
-    def post(self, request):
+    def create(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+            # Hash mật khẩu trước khi lưu
+            from django.contrib.auth.hashers import make_password
+            data = serializer.validated_data
+            data['password'] = make_password(data['password'])
+            
+            user = User.objects.create(**data)
+            return Response({
+                'message': 'User registered successfully',
+                'user': {
+                    'id': user.id,
+                    'name': user.name,
+                    'email': user.email
+                }
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # API: Login
 class LoginView(viewsets.ModelViewSet):
@@ -28,6 +40,8 @@ class LoginView(viewsets.ModelViewSet):
         if serializer.is_valid():
             email = serializer.validated_data['email']
             password = serializer.validated_data['password']
+            print("Login attempt - Email:", email)
+            print("Login attempt - Password:", password)
             try:
                 user = User.objects.get(email=email)
                 if user.verify_password(password):

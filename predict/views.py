@@ -27,13 +27,13 @@ class PredictViewSet(viewsets.ViewSet):
             
             if not data:
                 return Response(
-                    {'error': 'Không có dữ liệu đầu vào'},
+                    {'error': 'No input data provided'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
             if model is None:
                 return Response(
-                    {'error': 'Model chưa được load'},
+                    {'error': 'Model not loaded'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
 
@@ -44,7 +44,7 @@ class PredictViewSet(viewsets.ViewSet):
 
             except Exception as e:
                 return Response(
-                    {'error': f'Lỗi khi xử lý dữ liệu: {str(e)}'},
+                    {'error': f'Data processing error: {str(e)}'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             
@@ -56,11 +56,11 @@ class PredictViewSet(viewsets.ViewSet):
 
             return Response({
                 'prediction': prediction[0].tolist(),
-                'message': 'Dự đoán thành công'
+                'message': 'Prediction successful'
             })
 
         except Exception as e:
             return Response(
-                {'error': f'Lỗi khi dự đoán: {str(e)}'}, 
+                {'error': f'Prediction error: {str(e)}'}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
